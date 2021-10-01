@@ -1,0 +1,173 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+import seaborn as sns
+import warnings
+warnings.filterwarnings('ignore')
+
+from sklearn.model_selection import KFold
+from sklearn.model_selection import train_test_split 
+from sklearn.model_selection import GridSearchCV
+from sklearn.preprocessing import StandardScaler
+
+from sklearn.linear_model import LinearRegression 
+from sklearn.linear_model import Lasso
+from sklearn.linear_model import Ridge
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import ElasticNet
+
+
+from sklearn import metrics
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import r2_score
+from sklearn.model_selection import cross_val_score
+
+from scipy import stats
+df = pd.read_csv('C:/Users/hugod/Downloads/Dados/NYC Ap/nyc-rolling-sales.csv')
+df.head()
+#Dropping columns that won't will help us to create our prediction model
+del df['EASE-MENT']
+del df['Unnamed: 0']
+del df['SALE DATE']
+#Checking for duplicated entries, avoiding add noise to the model
+sum(df.duplicated(df.columns))
+#Checking again for duplicated entries, avoiding add noise to the model
+df = df.drop_duplicates(df.columns, keep='last')
+sum(df.duplicated(df.columns))
+df.shape
+df.info()
+df['BOROUGH'] = df['BOROUGH'].astype('category')
+df['TAX CLASS AT TIME OF SALE'] = df['TAX CLASS AT TIME OF SALE'].astype('category')
+df['TAX CLASS AT PRESENT'] = df['TAX CLASS AT PRESENT'].astype('category')
+
+df['LAND SQUARE FEET'] = pd.to_numeric(df['LAND SQUARE FEET'], errors='coerce')
+df['GROSS SQUARE FEET']= pd.to_numeric(df['GROSS SQUARE FEET'], errors='coerce')
+df['SALE PRICE'] = pd.to_numeric(df['SALE PRICE'], errors='coerce')
+
+df.columns[df.isnull().any()]
+miss=df.isnull().sum()/len(df)
+miss=miss[miss>0]
+miss.sort_values(inplace=True)
+miss
+miss=miss.to_frame()
+miss.columns=['count']
+miss.index.names=['Name']
+miss['Name']=miss.index
+miss
+#plot the missing values
+sns.set(style='whitegrid',color_codes=True)
+sns.barplot(x='Name', y='count',data=miss)
+plt.xticks(rotation=90)
+sns
+df['LAND SQUARE FEET']=df['LAND SQUARE FEET'].fillna(df['LAND SQUARE FEET'].mean())
+df['GROSS SQUARE FEET']=df['GROSS SQUARE FEET'].fillna(df['GROSS SQUARE FEET'].mean())
+test=df[df['SALE PRICE'].isna()]
+data=df[~df['SALE PRICE'].isna()]
+test = test.drop(columns='SALE PRICE')
+print(test.shape)
+test.head()
+corr = data.corr()
+corr['SALE PRICE'].sort_values(ascending=False)
+numeric_data=data.select_dtypes(include=[np.number])
+numeric_data.describe()
+sns.distplot(data['SALE PRICE'])
+data = data[(data['SALE PRICE'] > 100000) & (data['SALE PRICE'] < 5000000)]
+sns.distplot(data['SALE PRICE'])
+data['SALE PRICE'].skew()
+
+#SALE PRICE is highly right skewed. So, we will log transform it so that it give better results.
+
+sales=np.log(data['SALE PRICE'])
+print(sales.skew())
+sns.distplot(sales)
+data[["TOTAL UNITS", "SALE PRICE"]].groupby(['TOTAL UNITS'], as_index=False).count().sort_values(by='SALE PRICE', ascending=False)
+#Removing rows with TOTAL UNITS == 0 and one outlier with 2261 units
+
+data = data[(data['TOTAL UNITS'] > 0) & (data['TOTAL UNITS'] != 2261)] 
+cat_data=data.select_dtypes(exclude=[np.number])
+cat_data.describe()
+'''Data Pre Processing
+Let's see our dataset again'''
+
+del data['ADDRESS']
+del data['APARTMENT NUMBER']
+data.info()
+#transform the numeric features using log(x + 1)
+from scipy.stats import skew
+skewed = data[numeric_data.columns].apply(lambda x: skew(x.dropna().astype(float)))
+skewed = skewed[skewed > 0.75]
+skewed = skewed.index
+data[skewed] = np.log1p(data[skewed])
+scaler = StandardScaler()
+scaler.fit(data[numeric_data.columns])
+scaled = scaler.transform(data[numeric_data.columns])
+
+for i, col in enumerate(numeric_data.columns):
+       data[col] = scaled[:,i]
+
+data.head()
+data.info()
+del data['BUILDING CLASS AT PRESENT']
+del data['BUILDING CLASS AT TIME OF SALE']
+del data['NEIGHBORHOOD']
+
+#Select the variables to be one-hot encoded
+one_hot_features = ['BOROUGH', 'BUILDING CLASS CATEGORY','TAX CLASS AT PRESENT','TAX CLASS AT TIME OF SALE']
+# Convert categorical variables into dummy/indicator variables (i.e. one-hot encoding).
+one_hot_encoded = pd.get_dummies(data[one_hot_features])
+one_hot_encoded.info(verbose=True, memory_usage=True, null_counts=True)
+# Replacing categorical columns with dummies
+fdf = data.drop(one_hot_features,axis=1)
+fdf = pd.concat([fdf, one_hot_encoded] ,axis=1)
+fdf.info()
+fdf.describe()
+Y_fdf = fdf['SALE PRICE']
+X_fdf = fdf.drop('SALE PRICE', axis=1)
+
+
+X_fdf.shape , Y_fdf.shape
+X_train ,X_test, Y_train , Y_test = train_test_split(X_fdf , Y_fdf , test_size = 0.3 , random_state =34)
+# Training set
+X_train.shape , Y_train.shape
+#Modelling
+# RMSE
+def rmse(y_test,y_pred):
+      return np.sqrt(mean_squared_error(y_test,y_pred))
+
+
+#Linear Regression
+linreg = LinearRegression()
+linreg.fit(X_train, Y_train)
+Y_pred_lin = linreg.predict(X_test)
+rmse(Y_test,Y_pred_lin)
+
+
+#Lasso Regression
+alpha=0.00099
+lasso_regr=Lasso(alpha=alpha,max_iter=50000)
+lasso_regr.fit(X_train, Y_train)
+Y_pred_lasso=lasso_regr.predict(X_test)
+rmse(Y_test,Y_pred_lasso)
+
+
+#Ridge Regression
+ridge = Ridge(alpha=0.01, normalize=True)
+ridge.fit(X_train, Y_train)
+Y_pred_ridge = ridge.predict(X_test)
+rmse(Y_test,Y_pred_ridge)
+
+
+#RandomForest Regressor
+rf_regr = RandomForestRegressor()
+rf_regr.fit(X_train, Y_train)
+Y_pred_rf = rf_regr.predict(X_test)
+rmse(Y_test,Y_pred_rf)
+r2_score(Y_test, Y_pred_lin)
+
+r2_score(Y_test, Y_pred_lasso)
+
+r2_score(Y_test, Y_pred_ridge)
+
+r2_score(Y_test, Y_pred_rf)
