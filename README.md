@@ -79,7 +79,20 @@ The last two boroughs charts, Queens and Staten Island, represent the boroughs w
 ![](/output8.png)
 
 ### Prediction
-Five models were tried to predict price, 
+Five models were tried to predict price:
+* Linear Regression  
+RMSE = 0.631, R² = 0.345
+* Lasso Regression  
+RMSE = 0.634, R² = 0.338
+* Ridge Regression  
+RMSE = 0.631, R² = 0.345
+* Random Forest  
+RMSE = 0.577, R² = 0.456
+* XGBoost  
+RMSE = 0.566, R² = 0.47  
 
+XGBoost has the best results, RMSE and R², so it's a good idea to try to understand the feature importance  of the model variables, it was done in the graph below.
+![](/output15.png)  
+As we can see, the variable that most makes difference is located in Borough 1, Manhattan. It has a mean impact of nearly $250,000 on price, almost 100,000 more than if it was located in Brooklyn. This means if two apartments have everything equal less the location, an apartment in Manhattan is worth $100k more, this is important in investment decision. However, the R² tell us that this model is able explain only 47% of the total price.
 ## Conclusion
-Further researches with more data are recommended, mainly
+Further researches with more data are recommended, mainly number of rooms, proximity to services such as subway or supermarkets, some safety index, building conservation and much more. Even so, the current model helps to understand how boroughs influence in price in NYC and can be used in investment decisions.
