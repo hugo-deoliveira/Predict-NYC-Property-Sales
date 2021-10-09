@@ -30,7 +30,7 @@ Querying the data so we can see which information is available in this dataset:
 A very useful information that we could try to extract from this data is **what affect the price**.  
 Altough we have a lot of information in this dataset, some data that would be useful is missing, like number of rooms and property conservation level. Also it lacks of categorical classification of neighborhood, which i'll try resolve using One-Hot Encoding.
 
-### I needed to clean the data so that it was usable for our model, so the following changes were done:
+### The following changes were done:
 * Columns like 'EASE-MENT', 'SALE DATE', 'APARTMENT NUMBER' and 'ADDRESS' were deleted due null values or lack of relevance in sale prices change.
 * Unfortunately, 'SALE PRICE', 'GROSS SQUARE FEET' and 'LAND SQUARE FEET' have some data missing, but it wouldn't be a smart choice to delete those columns, because price and size are very important variable when you try to predict price, so the model will lack some accuracy.
 * Since, LOT, ZIP CODE, BLOCK and BOROUGH were variables to indicate location, I deleted them but, using one hot encoding made variables to indicate the dummy of each Borough of NYC. I kept Borough due its capacity to carry geographical meaning with less variables, as we know the differences between the boroughs. (Eg.: It's reasonble to think the same apartment with everything equal is more expensive in Manhatan than in The Bronx). The following numbers were used to indicate the boroughs: 
@@ -71,26 +71,15 @@ In Manhattan, Condos - Elevator Apartments are by far the best-selling category.
 The next two charts show the best-selling building categories for the Bronx and Brooklyn. Both boroughs have family dwellings (two and one family) as the top sellers, although in Brooklyn the Condos have a larger share and it's easy to understand why, as it's a category related to higher income classes and Brooklyn is one boroughs associated with higher income classes than the Bronx.
 ![](/output5.png)
 #### Top sellers building class categories among Brooklyn sales
+The last two boroughs charts, Queens and Staten Island, represent the boroughs where the best-selling category is one family dwelling, while in the Bronx and Brooklyn is the two families, which indicates the families have a home in better condition, and it's probably more expensive.
 ![](/output6.png)
 #### Top sellers building class categories among Queens sales
 ![](/output7.png)
 #### Top sellers building class categories among Staten Island sales
 ![](/output8.png)
 
-
-
-
-```
-asdasdasd
-count    5462.000000  count    5462.000000
-mean        1.767335  mean        1.767335
-std         1.110477 std         1.110477
-min         0.107820 min         0.107820
-25%         0.900000 25%         0.900000
-50%         1.439500 50%         1.439500
-75%         2.401875 75%         2.401875
-max         4.996841 max         4.996841
-``` 
+### Prediction
+Five models were tried to predict price, 
 
 ## Conclusion
 Further researches with more data are recommended, mainly
