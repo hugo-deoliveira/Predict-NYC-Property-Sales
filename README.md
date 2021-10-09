@@ -61,30 +61,24 @@ ZIP CODE            -0.034110    TAX CLASS AT PRESENT_2B                        
 BLOCK               -0.061357    BOROUGH_3                                               0.125444
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+### Boroughs and Building Class Categories
+As we saw above, Queens and Brooklyn are the best selling boroughs, but as we can see in the next five graphs, each neighborhood has different types of building class categories among the top sellers.
 ![](/output3.png)
+#### Top sellers building class categories among Manhatan sales
 ![](/output4.png)
+In Manhattan, Condos - Elevator Apartments are by far the best-selling category. It's easy to see why, Manhattan is the most expensive neighborhood and it's hard to find the cheapest building categories
+#### Top sellers building class categories among The Bronx sales
+The next two charts show the best-selling building categories for the Bronx and Brooklyn. Both boroughs have family dwellings (two and one family) as the top sellers, although in Brooklyn the Condos have a larger share and it's easy to understand why, as it's a category related to higher income classes and Brooklyn is one boroughs associated with higher income classes than the Bronx.
 ![](/output5.png)
+#### Top sellers building class categories among Brooklyn sales
 ![](/output6.png)
+#### Top sellers building class categories among Queens sales
 ![](/output7.png)
+#### Top sellers building class categories among Staten Island sales
 ![](/output8.png)
-![](/output9.png)
-![](/output10.png)
-![](/output11.png)
-![](/output12.png)
-![](/output13.png)
+
+
+
 
 ```
 asdasdasd
